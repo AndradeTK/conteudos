@@ -1,0 +1,265 @@
+Você está coberto de razão e peço as mais sinceras desculpas pela péssima experiência. Fica claro que a minha ferramenta para gerar links de download não está funcionando corretamente e está causando mais frustração do que ajuda.
+
+**Vamos esquecer completamente os arquivos .zip.**
+
+A forma mais garantida de resolver isso é eu te passar todo o código e as instruções exatas para você mesmo criar o projeto do zero no NetBeans. Leva 5 minutos e é à prova de erros.
+
+Por favor, siga estes passos:
+
+-----
+
+### **Guia: Criando o Projeto no NetBeans passo a passo**
+
+#### **Passo 1: Criar o Projeto Maven Web**
+
+1.  Abra o NetBeans.
+2.  Vá em **Arquivo \> Novo Projeto...** (File \> New Project...).
+3.  Na janela de categorias, selecione **Java com Maven**.
+4.  Nos projetos, selecione **Aplicação Web** (Web Application).
+5.  Clique em **Próximo**.
+6.  Dê ao projeto o nome de **`QuizApp`**.
+7.  Clique em **Próximo**.
+8.  Na tela de servidor, selecione o seu **GlassFish Server** e deixe a versão do Java EE como **Jakarta EE 10**.
+9.  Clique em **Finalizar**.
+
+#### **Passo 2: Configurar o `pom.xml`**
+
+O NetBeans criará um arquivo `pom.xml`. Substitua o conteúdo dele por este código. Este arquivo gerencia as dependências do projeto.
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.mycompany</groupId>
+    <artifactId>QuizApp</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>QuizApp</name>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <jakartaee>10.0.0</jakartaee>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>${jakartaee}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+```
+
+#### **Passo 3: Criar os Pacotes**
+
+Na árvore de projetos à esquerda, clique com o botão direito em **"Pacotes de Códigos-Fonte"** (Source Packages) e crie os seguintes pacotes:
+
+1.  `model`
+2.  `controller`
+3.  `view`
+
+#### **Passo 4: Criar os Arquivos Java**
+
+Agora, clique com o botão direito em cada pacote que você criou e selecione **Novo \> Classe Java...** para criar os arquivos abaixo. Copie e cole o conteúdo exato.
+
+**1. `model.Questao.java`**
+
+```java
+package model;
+
+import java.util.List;
+
+public class Questao {
+    private String enunciado;
+    private List<String> alternativas;
+
+    public Questao(String enunciado, List<String> alternatives) {
+        this.enunciado = enunciado;
+        this.alternativas = alternatives;
+    }
+
+    public String getEnunciado() {
+        return enunciado;
+    }
+
+    public List<String> getAlternativas() {
+        return alternativas;
+    }
+}
+```
+
+**2. `controller.QuizDAO.java`**
+
+```java
+package controller;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import model.Questao;
+
+public class QuizDAO {
+    public List<Questao> getTodasAsQuestoes() {
+        List<Questao> questoes = new ArrayList<>();
+        questoes.add(new Questao("Qual o maior planeta do nosso sistema solar?", Arrays.asList("Marte", "Terra", "Saturno", "Júpiter")));
+        questoes.add(new Questao("Qual a linguagem de programação que estamos usando neste projeto?", Arrays.asList("Python", "C#", "JavaScript", "Java")));
+        questoes.add(new Questao("Qual o oceano mais profundo do mundo?", Arrays.asList("Atlântico", "Índico", "Ártico", "Pacífico")));
+        questoes.add(new Questao("Em que ano o homem pisou na Lua pela primeira vez?", Arrays.asList("1975", "1981", "1965", "1969")));
+        questoes.add(new Questao("Qual destes animais é um mamífero?", Arrays.asList("Pinguim", "Tubarão", "Tartaruga", "Baleia")));
+        questoes.add(new Questao("Qual a capital do Brasil?", Arrays.asList("São Paulo", "Rio de Janeiro", "Salvador", "Brasília")));
+        questoes.add(new Questao("Qual a fórmula química da água?", Arrays.asList("CO2", "O2", "NaCl", "H2O")));
+        questoes.add(new Questao("Quantos lados tem um hexágono?", Arrays.asList("5", "8", "7", "6")));
+        questoes.add(new Questao("Quem escreveu 'Dom Quixote'?", Arrays.asList("William Shakespeare", "Machado de Assis", "Homero", "Miguel de Cervantes")));
+        questoes.add(new Questao("Qual tecnologia é usada neste projeto para rodar o Servlet?", Arrays.asList("Tomcat", "Node.js", "Apache HTTPD", "GlassFish")));
+        return questoes;
+    }
+}
+```
+
+**3. `view.QuizServlet.java`** (clique com o botão direito no pacote `view` e selecione **Novo \> Servlet...**)
+
+```java
+package view;
+
+import controller.QuizDAO;
+import model.Questao;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@WebServlet("/quiz")
+public class QuizServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            QuizDAO quizDAO = new QuizDAO();
+            List<Questao> questoes = quizDAO.getTodasAsQuestoes();
+
+            out.println("<!DOCTYPE html>");
+            out.println("<html><head><title>Quiz Interativo</title>");
+            out.println("<style>");
+            out.println("body { font-family: sans-serif; background-color: #f0f2f5; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; }");
+            out.println(".quiz-container { background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 80%; max-width: 700px; }");
+            out.println("h1 { color: #4a4e69; text-align: center; }");
+            out.println(".pergunta { margin-bottom: 25px; border-left: 4px solid #9a8c98; padding-left: 15px; }");
+            out.println(".pergunta h3 { margin: 0 0 10px 0; color: #22223b; }");
+            out.println(".alternativa { margin-bottom: 8px; }");
+            out.println(".alternativa label { margin-left: 8px; cursor: pointer; }");
+            out.println(".submit-btn { background-color: #4a4e69; color: white; padding: 12px 25px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; display: block; width: 100%; transition: background-color 0.3s; }");
+            out.println(".submit-btn:hover { background-color: #22223b; }");
+            out.println("</style>");
+            out.println("</head><body>");
+            out.println("<div class='quiz-container'>");
+            out.println("<h1>Quiz de Conhecimentos Gerais</h1>");
+            out.println("<form action='quiz' method='post'>");
+            for (int i = 0; i < questoes.size(); i++) {
+                Questao q = questoes.get(i);
+                out.println("<div class='pergunta'>");
+                out.println("<h3>" + (i + 1) + ". " + q.getEnunciado() + "</h3>");
+                out.println("<div class='alternativa'><input type='radio' name='questao_" + i + "' value='A' id='q" + i + "a' required><label for='q" + i + "a'>A) " + q.getAlternativas().get(0) + "</label></div>");
+                out.println("<div class='alternativa'><input type='radio' name='questao_" + i + "' value='B' id='q" + i + "b'><label for='q" + i + "b'>B) " + q.getAlternativas().get(1) + "</label></div>");
+                out.println("<div class='alternativa'><input type='radio' name='questao_" + i + "' value='C' id='q" + i + "c'><label for='q" + i + "c'>C) " + q.getAlternativas().get(2) + "</label></div>");
+                out.println("<div class='alternativa'><input type='radio' name='questao_" + i + "' value='D' id='q" + i + "d'><label for='q" + i + "d'>D) " + q.getAlternativas().get(3) + "</label></div>");
+                out.println("</div>");
+            }
+            out.println("<button type='submit' class='submit-btn'>Verificar Respostas</button>");
+            out.println("</form></div></body></html>");
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        response.setContentType("text/html;charset=UTF-8");
+        try (PrintWriter out = response.getWriter()) {
+            int nota = 0;
+            int totalQuestoes = 10;
+            for (int i = 0; i < totalQuestoes; i++) {
+                if ("D".equals(request.getParameter("questao_" + i))) {
+                    nota++;
+                }
+            }
+            out.println("<!DOCTYPE html>");
+            out.println("<html><head><title>Resultado do Quiz</title>");
+            out.println("<style>");
+            out.println("body { font-family: sans-serif; background-color: #f0f2f5; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; text-align: center; }");
+            out.println(".resultado-container { background-color: #fff; padding: 40px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }");
+            out.println("h1 { color: #4a4e69; }");
+            out.println("p { font-size: 20px; }");
+            out.println(".nota { font-size: 48px; font-weight: bold; color: #22223b; margin: 10px 0; }");
+            out.println(".retry-btn { background-color: #4a4e69; color: white; padding: 12px 25px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; text-decoration: none; display: inline-block; margin-top: 20px; transition: background-color 0.3s; }");
+            out.println(".retry-btn:hover { background-color: #22223b; }");
+            out.println("</style>");
+            out.println("</head><body>");
+            out.println("<div class='resultado-container'>");
+            out.println("<h1>Resultado Final</h1>");
+            out.println("<p>Sua pontuação foi:</p>");
+            out.println("<div class='nota'>" + nota + " / " + totalQuestoes + "</div>");
+            out.println("<p>Você acertou " + nota + " de " + totalQuestoes + " questões!</p>");
+            out.println("<a href='quiz' class='retry-btn'>Tentar Novamente</a>");
+            out.println("</div></body></html>");
+        }
+    }
+}
+```
+
+#### **Passo 5: Editar o `index.html`**
+
+No NetBeans, na pasta **`Web Pages`**, você encontrará um `index.html`. Substitua o conteúdo dele por este:
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Início do Quiz</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
+        .container { text-align: center; }
+        h1 { color: #333; }
+        .start-button { background-color: #007bff; color: white; padding: 15px 30px; font-size: 18px; text-decoration: none; border-radius: 5px; transition: background-color 0.3s; }
+        .start-button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo ao Quiz!</h1>
+        <p>Clique no botão abaixo para começar.</p>
+        <a href="quiz" class="start-button">Começar o Quiz</a>
+    </div>
+</body>
+</html>
+```
+
+#### **Passo 6: Executar o Projeto**
+
+1.  Clique com o botão direito no projeto `QuizApp` na lista de projetos.
+2.  Selecione **Limpar e Construir** (Clean and Build).
+3.  Depois, clique com o botão direito novamente e selecione **Executar** (Run).
+
+O NetBeans vai iniciar o GlassFish e abrir o navegador em `http://localhost:8080/QuizApp/`.
+
+Desta forma, você constrói o projeto localmente, sem depender de nenhum link que possa falhar. Peço desculpas mais uma vez pelo transtorno e agradeço sua paciência.
