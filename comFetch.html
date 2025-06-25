@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Html.html to edit this template
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript">
+            const dados = {
+                nome: "Prampero"
+            };
+            function rodaAjax() {
+                fetch("Mostrar?txtNome=Prampero", {
+                    method: 'GET',
+                    //headers,
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    //body: JSON.stringify(dados)
+                })
+                        .then(response => response.json())
+                        .then(dados => {
+                            document.getElementById("idNome").value = dados.nome;
+                        })
+                        .catch(error => {
+                            document.getElementById("idNome").value = "Erro ao listar:" + error;
+                        });
+
+            }
+        </script>
+    </head>
+    <body>
+        <h1> Com fetch </h1>
+        Código :<input type="text" name="txtCodigo" id="idCodigo" />
+        Nome :<input type="text" name="txtNome" id="idNome" />
+        <input type="button" name="b1" id="idB1" value="Rodar" onclick="rodaAjax()"/>
+    </body>
+</html>
