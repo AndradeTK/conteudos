@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Consulta de Filmes</title>
+</head>
+<body style="margin: 20px">
+    <h1 align="center">Consulta pelo nome (FILME)</h1>
+    <label for="idFilme">Nome do filme:</label>
+    <input name="filme" type="text" id="idFilme" size="30" />
+    <button onclick="buscaFilme()">Buscar</button>
+
+    <div id="idDiv"></div>
+    <img src="" id="idImg" style="margin-top: 10px; max-height: 500px;" />
+
+    <script>
+        function limpaInput() {
+            document.getElementById('idFilme').value = "";
+        }
+
+        function buscaFilme() {
+            const filme = document.getElementById('idFilme').value.trim();
+            const idDiv = document.getElementById('idDiv');
+            const idImg = document.getElementById('idImg');
+
+            idDiv.innerHTML = ""; // Limpa resultado anterior
+            idImg.src = "";       // Limpa imagem anterior
+
+            if (filme.length < 2) {
+                alert("Nome do filme muito curto.");
+                return;
+            }
+
+            fetch("https://imdb.iamidiotareyoutoo.com/search?q=" + encodeURIComponent(filme))
+                .then(response => {
+                    if (!response.ok) throw new Error("Erro na resposta da API");
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data.ok || !data.description || data.description.length === 0) {
+                        idDiv.innerHTML = "Nenhum resultado encontrado.";
+                        return;
+                    }
+
+                    // Exibe o primeiro pôster
+                    const primeiroFilme = data.description[0];
+                    idImg.src = primeiroFilme["#IMG_POSTER"];
+
+                    // Lista todos os títulos
+                    let html = "<h3>Resultados:</h3><ul>";
+                    for (const filme of data.description) {
+                        html += `<li><a href="${filme["#IMDB_URL"]}" target="_blank">${filme["#TITLE"]} (${filme["#YEAR"]})</a></li>`;
+                    }
+                    html += "</ul>";
+                    idDiv.innerHTML = html;
+
+                })
+                .catch(error => {
+                    idDiv.innerHTML = "Erro ao buscar filme: " + error.message;
+                    limpaInput();
+                });
+        }
+    </script>
+</body>
+</html>
